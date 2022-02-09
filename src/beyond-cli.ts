@@ -1,6 +1,10 @@
+// @ts-nocheck
 import path from "path";
 import fs from "fs";
 import { program } from "commander";
+import log from "loglevel";
+
+import { verifyAssets } from "./helpers/verification";
 
 program.version("0.0.2");
 
@@ -11,14 +15,17 @@ programCommand("verify_assets")
     "-d, --directory <string>",
     "Path of the folder containing assets"
   )
+  .requiredOption("-n, --number <number>", "Number of assets")
   .action(async (options, cmd) => {
+    console.log("\n === Verifying assets ===");
     const baseDir = options.directory;
+    const numberOfAssets = options.number;
     const imageDir = path.join(baseDir, "images");
     const jsonDir = path.join(baseDir, "jsons");
-    console.log({ imageDir, jsonDir });
     const imageList = fs.readdirSync(imageDir);
     const jsonList = fs.readdirSync(jsonDir);
-    console.log({ imageList, jsonList });
+    verifyAssets(imageList, jsonList, numberOfAssets, baseDir);
+    console.log("\n === Verifying successful ===");
     process.exit(0);
   });
 
@@ -29,7 +36,7 @@ programCommand("upload_assets")
     "Path of the folder containing assets"
   )
   .requiredOption("-cf, --config <string>", "Path of the config file")
-  .action(async (options, cmd) => {
+  .action(async (options: string, cmd: any) => {
     const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
     const { nftStorageApiKey } = config;
     console.log({ nftStorageApiKey });
