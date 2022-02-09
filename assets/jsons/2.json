@@ -1,0 +1,39 @@
+{
+  "title": "Near Dragon #2",
+  "edition": 2,
+  "description": "Dragon Nation is an exclusive collection of 3,000 Dragon NFTs on the NEAR blockchain",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dawn"
+    },
+    {
+      "trait_type": "Wings",
+      "value": "Nightmare"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Green"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "Gold Chain"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "None"
+    },
+    {
+      "trait_type": "Ears",
+      "value": "Topaz"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Laser"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Police Cap"
+    }
+  ]
+}
