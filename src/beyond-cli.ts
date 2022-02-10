@@ -41,8 +41,8 @@ programCommand("upload_assets")
     let config = JSON.parse(fs.readFileSync(options.config, "utf8"));
     const { nftStorageApiKey } = config;
     config.ipfsLink = await uploadNftStorage(nftStorageApiKey, baseDir);
-    fs.writeFileSync(options.config, JSON.stringify(config));
-    console.log("\n === Finished upload & saved IPFS CID ===\n", CID);
+    fs.writeFileSync(options.config, JSON.stringify(config, null, 2));
+    console.log("\n === Finished upload & saved IPFS CID ===\n");
     process.exit(0);
   });
 
