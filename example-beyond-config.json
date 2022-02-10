@@ -1,24 +1,24 @@
 {
-    "nftStorageApiKey": "XXXYYYZZZ",
-    "walletAuthority": "dragonnation.near",
-    "collectionName": "Near Dragon Nation",
-    "symbol": "NDN",
-    "description": "Dragon Nation is an exclusive collection of 3,000 Dragon NFTs on the NEAR blockchain.",
-    "size": 3000,
-    "costInNear": 5,
-    "premintStartDate": "",
-    "publicMintStartDate": "",
-    "initialsPayout": {
-        "c-k-s.near": 50,
-        "ndragons.near": 20,
-        "flyingsaucer.near": 20,
-        "dragonnation.near": 10
-    },
-    "royaltiesPayout": {
-        "flyingtrade.near": 20,
-        "c-k-s.near": 20,
-        "mkdrag.near": 20,
-        "dragonnation.near": 40
-    },
-    "royaltiesPercent": 5
+  "nftStorageApiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlFNTEzRjhCYzMxMjNmOTUwMGY0ODcxMDkwOTRBMjQzNUYyOTBjOTciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0NDQ3MzY3MDA0MSwibmFtZSI6ImJleW9uZC1rZXkifQ.hmv5mquKGdsLtaguiErUa4uq38gCzz-3iYXlljWeMkE",
+  "walletAuthority": "dragonnation.near",
+  "collectionName": "Near Dragon Nation",
+  "symbol": "NDN",
+  "description": "Dragon Nation is an exclusive collection of 3,000 Dragon NFTs on the NEAR blockchain.",
+  "size": 3000,
+  "costInNear": 5,
+  "premintStartDate": "",
+  "publicMintStartDate": "",
+  "initialsPayout": {
+    "c-k-s.near": 50,
+    "ndragons.near": 20,
+    "flyingsaucer.near": 20,
+    "dragonnation.near": 10
+  },
+  "royaltiesPayout": {
+    "flyingtrade.near": 20,
+    "c-k-s.near": 20,
+    "mkdrag.near": 20,
+    "dragonnation.near": 40
+  },
+  "royaltiesPercent": 5
 }

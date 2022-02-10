@@ -7,31 +7,28 @@ declare interface File {
   _parts: any[];
 }
 
-async function cleanFiles(baseDir): Promise<typeof File[][]> {
-  console.log({ baseDir });
-  const images = await fs.readdir(
-    path.join(__dirname, `${baseDir}/images`, "")
-  );
-  console.log("images loaded");
+async function iterateFiles(baseDir): Promise<typeof File[][]> {
+  const images = await fs.readdir(`${baseDir}/images`);
   const files = await Promise.all(
     images.map(async (img) => {
-      console.log({ img });
       const id = path.basename(img, path.extname(img));
       const jsonFile = (
-        await fs.readFile(path.join(baseDir, "jsons", `${id_}.json`))
+        await fs.readFile(`${baseDir}/jsons/${id}.json`)
       ).toString();
       return [
-        new File([await fs.readFile(baseDir)], `${id}.png`),
+        new File([await fs.readFile(`${baseDir}/images/${img}`)], `${id}.png`),
         new File([jsonFile], `${id}.json`),
       ];
     })
   );
-
   return files;
 }
 
 export const uploadNftStorage = async (apiKey, baseDir) => {
-  console.log({ apiKey, baseDir });
-  const initialFiles = await cleanFiles(baseDir);
-  console.log(initialFiles);
+  const initialFiles = await iterateFiles(baseDir);
+  console.log("\n === Loaded assests ===");
+  const client = new NFTStorage({ token: apiKey });
+  console.log("\n === Initialized NFT Storage Client ===");
+  const CID = await client.storeDirectory(initialFiles.flat());
+  console.log("\n === Finished upload & saved IPFS CID ===\n", CID);
 };

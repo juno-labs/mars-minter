@@ -36,10 +36,11 @@ programCommand("upload_assets")
   )
   .requiredOption("-cf, --config <string>", "Path of the config file")
   .action(async (options: string, cmd: any) => {
+    console.log("\n === Uploading assets ===");
     const baseDir = options.directory;
     const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
     const { nftStorageApiKey } = config;
-    uploadNftStorage(nftStorageApiKey, baseDir);
+    await uploadNftStorage(nftStorageApiKey, baseDir);
     process.exit(0);
   });
 
