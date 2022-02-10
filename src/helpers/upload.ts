@@ -29,6 +29,5 @@ export const uploadNftStorage = async (apiKey, baseDir) => {
   console.log("\n === Loaded assests ===");
   const client = new NFTStorage({ token: apiKey });
   console.log("\n === Initialized NFT Storage Client ===");
-  const CID = await client.storeDirectory(initialFiles.flat());
-  console.log("\n === Finished upload & saved IPFS CID ===\n", CID);
+  return await client.storeDirectory(initialFiles.flat());
 };

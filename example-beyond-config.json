@@ -1,5 +1,5 @@
 {
-  "nftStorageApiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlFNTEzRjhCYzMxMjNmOTUwMGY0ODcxMDkwOTRBMjQzNUYyOTBjOTciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0NDQ3MzY3MDA0MSwibmFtZSI6ImJleW9uZC1rZXkifQ.hmv5mquKGdsLtaguiErUa4uq38gCzz-3iYXlljWeMkE",
+  "nftStorageApiKey": "XXXYYYZZZZ",
   "walletAuthority": "dragonnation.near",
   "collectionName": "Near Dragon Nation",
   "symbol": "NDN",
@@ -20,5 +20,6 @@
     "mkdrag.near": 20,
     "dragonnation.near": 40
   },
-  "royaltiesPercent": 5
+  "royaltiesPercent": 5,
+  "ipfsLink": ""
 }
