@@ -67,14 +67,6 @@ programCommand("deploy_contract")
       );
     }
 
-    // Deploy the contract
-    // TODO: Put a check if a contract is already deploy on this near address
-    const deployCommand = `NEAR_ENV=${env} near deploy --wasmFile ../programs/dragon.wasm --accoundId ${config.walletAuthority}`;
-    console.log({ deployCommand });
-    // const deployOutput = execSync(deployCommand, { encoding: "utf-8" });
-    // console.log({ deployOutput });
-
-    // Initialize the contract
     const premintStartEpoch = dayjs(config.premintStartDate).unix();
     const publicMintStartEpoch = dayjs(config.publicMintStartDate).unix();
     const initDict = {
@@ -98,23 +90,16 @@ programCommand("deploy_contract")
       },
     };
 
-    const initCommand = `NEAR_ENV=${env} near call ${
-      config.walletAuthority
-    } new_default_meta --accoundId ${config.walletAuthority} '${JSON.stringify(
-      initDict
-    )}'`;
-    console.log({ initCommand });
-    // const initOutput = execSync(initCommand, { encoding: "utf-8" });
-    // console.log({ initOutput });
-
-    const firstCommand = `NEAR_ENV=${env} near deploy ${
+    // Deploy the contract
+    // TODO: Put a check if a contract is already deploy on this near address
+    const deployCommand = `NEAR_ENV=${env} near deploy ${
       config.walletAuthority
     } ./programs/dragon.wasm new_default_meta '${JSON.stringify(
       initDict
     )}' --accountId ${config.walletAuthority}`;
-    console.log({ firstCommand });
-    const firstOutput = execSync(firstCommand, { encoding: "utf-8" });
-    console.log({ firstOutput });
+    console.log({ deployCommand });
+    const deployOutput = execSync(deployCommand, { encoding: "utf-8" });
+    console.log({ deployOutput });
 
     process.exit(0);
   });
