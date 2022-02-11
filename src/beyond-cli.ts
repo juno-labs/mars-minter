@@ -94,7 +94,7 @@ programCommand("deploy_contract")
     // TODO: Put a check if a contract is already deploy on this near address
     const deployCommand = `NEAR_ENV=${env} near deploy ${
       config.walletAuthority
-    } ./programs/dragon.wasm new_default_meta '${JSON.stringify(
+    } ./programs/beyond.wasm new_default_meta '${JSON.stringify(
       initDict
     )}' --accountId ${config.walletAuthority}`;
     console.log({ deployCommand });
