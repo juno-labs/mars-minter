@@ -1,24 +1,35 @@
 # Beyond
 
-## Deploy the contract for your NFT collection:
+Want to launch your own project on NEAR? Beyond makes it easy. Feel free to make contributions to the code.
 
-1. Get your images and metadata JSON files in the structure same as that of the example-assets folder. Let's say you saved your assets at path_assets.
-2. Create your configuration file in the structure shown in example-beyond-config.json. Let's say you created your config file at path_config.
-3. Get your NFT Storage API key from https://nft.storage/files/ to save it in the nftStorageApiKey field.
+## Steps needed to launch a project
+
+1. Have assets/art ready (this is on you, anon)
+2. Verify and Upload assets
+3. Deploy contract
+4. Add whitelisted users (optional)
+5. Connect to your frontend minting app (this is on you, anon)
+
+## Launch your collection:
+
+1. Get your images and metadata json files in the same structure as that in the `example-assets` folder.
+2. Create your configuration file in the structure shown in `example-beyond-config.json`
+3. Sign up for NFT Storage API key (it's free) and get an API key from https://nft.storage/files/ to save in the `nftStorageApiKey` field within the config.
 4. Verify your assets by running the following command:
 
 ```sh
-ts-node src/beyond-cli.ts verify_assets -d path_assets -n <number of image+jsons>
+ts-node src/beyond-cli.ts verify_assets -d example-assets -n <size-of-nft-collection>
 ```
 
 5. Upload your assets by running the following command:
 
 ```sh
-ts-node src/beyond-cli.ts upload_assets -d path_assets -cf path_config
+ts-node src/beyond-cli.ts upload_assets -d example-assets -cf example-beyond-config.json
 ```
 
-6. Install near-cli by following instructions from https://docs.near.org/docs/tools/near-cli#installation
-7. Login to near-cli using your NEAR account, on which you want to deploy the NFT contract. This must match with the walletAuthority account present in the configuration file.
+6. Install `near-cli` by following instructions from [the official near docs](https://docs.near.org/docs/tools/near-cli#installation)
+
+7. Login to `near-cli` using your NEAR account, on which you want to deploy the NFT contract. Note - this must match with the `walletAuthority` passed in your configuration file.
 
 ```sh
 NEAR_ENV=mainnet near login
@@ -27,12 +38,13 @@ NEAR_ENV=mainnet near login
 8. Deploy the contract by running the following command:
 
 ```sh
-ts-node src/beyond-cli.ts upload_assets -e mainnet -cf path_config
+s-node src/beyond-cli.ts deploy_contract -e mainnet -cf example-beyond-config.json
 ```
 
-9. Create your whitelist file in the structure shown in example-beyond-whitelist-addresses.json. Let's say you created your config file at path_whitelist.
+9. Create your whitelist file in the structure shown in `example-beyond-whitelist-addresses.json`.
+
 10. Whitelist addresses by running the following command:
 
 ```sh
-ts-node src/beyond-cli.ts upload_assets -e mainnet -cf path_config -wj path_whitelist
+ts-node src/beyond-cli.ts whitelist -e mainnet -cf path_config -wj example-beyond-whitelist-addresses.json
 ```
