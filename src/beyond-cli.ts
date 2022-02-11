@@ -106,13 +106,50 @@ programCommand("deploy_contract")
 
 // Whitelists the addresses
 programCommand("whitelist")
+  .option(
+    "-e, --env <string>",
+    "NEAR cluster env name. One of: mainnet, testnet",
+    "testnet"
+  )
   .requiredOption(
     "-wj, --wl-json <string>",
     "Path of the json file containing addresses with allocation"
   )
-  .action(async (options, cmd) => {
+  .requiredOption("-cf, --config <string>", "Path of the config file")
+  .action(async (options) => {
+    const { env } = options;
+    const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
     const wlJson = JSON.parse(fs.readFileSync(options.wlJson, "utf8"));
-    console.log({ wlJson });
+    // TODO: Make these calls concurrent
+    // TODO: Reformat the output shown to the user
+    for (const nearAddress in wlJson) {
+      // Whitelist
+
+      const whiltelistCommand = `NEAR_ENV=${env} near call ${
+        config.walletAuthority
+      } add_whitelist_account '${JSON.stringify({
+        account_id: nearAddress,
+        allowance: wlJson[nearAddress],
+      })}' --accountId ${config.walletAuthority}`;
+      console.log({ whiltelistCommand });
+      const whiltelistOutput = execSync(whiltelistCommand, {
+        encoding: "utf-8",
+      });
+      console.log({ whiltelistOutput });
+
+      // Verify Whitelist
+
+      const verifyWhiltelistCommand = `NEAR_ENV=${env} near view ${
+        config.walletAuthority
+      } get_wl_allowance '${JSON.stringify({
+        account_id: nearAddress,
+      })}' --accountId ${config.walletAuthority}`;
+      console.log({ verifyWhiltelistCommand });
+      const verifyWhiltelistOutput = execSync(verifyWhiltelistCommand, {
+        encoding: "utf-8",
+      });
+      console.log({ verifyWhiltelistOutput });
+    }
     process.exit(0);
   });
 
