@@ -1,13 +1,16 @@
 // @ts-nocheck
-import path from "path";
-import fs from "fs";
-import { execSync } from "child_process";
+import { exec, execSync } from "child_process";
 import { program } from "commander";
 import dayjs from "dayjs";
-
-import { verifyAssets } from "./helpers/verification";
+import fs from "fs";
+import path from "path";
+import util from "util";
 import { uploadNftStorage } from "./helpers/upload";
+import { verifyAssets } from "./helpers/verification";
+
 program.version("0.0.2");
+
+const execAsync = util.promisify(exec);
 
 // Verifies that images and json have same number of assets
 // Verifies the structure of json
@@ -120,36 +123,59 @@ programCommand("whitelist")
     const { env } = options;
     const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
     const wlJson = JSON.parse(fs.readFileSync(options.wlJson, "utf8"));
-    // TODO: Make these calls concurrent
-    // TODO: Reformat the output shown to the user
-    for (const nearAddress in wlJson) {
-      // Whitelist
-
+    const promiseList = Object.keys(wlJson).map(async (nearAddress) => {
       const whiltelistCommand = `NEAR_ENV=${env} near call ${
         config.walletAuthority
       } add_whitelist_account '${JSON.stringify({
         account_id: nearAddress,
         allowance: wlJson[nearAddress],
       })}' --accountId ${config.walletAuthority}`;
-      console.log({ whiltelistCommand });
-      const whiltelistOutput = execSync(whiltelistCommand, {
-        encoding: "utf-8",
-      });
-      console.log({ whiltelistOutput });
+      const { stdout: _stdoutAdd, stderr: _stderrAdd } = await execAsync(
+        whiltelistCommand,
+        {
+          encoding: "utf-8",
+        }
+      );
 
       // Verify Whitelist
-
       const verifyWhiltelistCommand = `NEAR_ENV=${env} near view ${
         config.walletAuthority
       } get_wl_allowance '${JSON.stringify({
         account_id: nearAddress,
       })}' --accountId ${config.walletAuthority}`;
-      console.log({ verifyWhiltelistCommand });
-      const verifyWhiltelistOutput = execSync(verifyWhiltelistCommand, {
-        encoding: "utf-8",
-      });
-      console.log({ verifyWhiltelistOutput });
-    }
+
+      const { stdout: stdoutVerify, stderr: _stderrVerify } = await execAsync(
+        verifyWhiltelistCommand,
+        {
+          encoding: "utf-8",
+        }
+      );
+
+      const regexForWlCount = "\n([0-9]+)\n";
+      const match = stdoutVerify.match(regexForWlCount);
+
+      let error = false;
+      if (!match) {
+        error = true;
+      }
+
+      if (!error) {
+        const currentWhitelistAllowance = parseInt(match[1]);
+        if (currentWhitelistAllowance !== wlJson[nearAddress]) {
+          error = true;
+        } else {
+          console.log(
+            `Whitelisting successful: ${nearAddress} for allowance ${wlJson[nearAddress]}`
+          );
+        }
+      }
+
+      if (error) {
+        console.log(`Whitelisting of ${nearAddress} failed, please try again!`);
+      }
+    });
+
+    await Promise.all(promiseList);
     process.exit(0);
   });
 
