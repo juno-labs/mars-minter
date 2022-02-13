@@ -6,11 +6,16 @@ import fs from "fs";
 import path from "path";
 import util from "util";
 import { uploadNftStorage } from "./helpers/upload";
-import { verifyAssets } from "./helpers/verification";
+import {
+  verifyAssets,
+  validateConfigurationFile,
+} from "./helpers/verification";
 
 program.version("0.0.2");
 
 const execAsync = util.promisify(exec);
+
+const COST_FACTOR = 1000000000000000000000000;
 
 // Verifies that images and json have same number of assets
 // Verifies the structure of json
@@ -62,12 +67,9 @@ programCommand("deploy_contract")
   .action(async (options) => {
     const { env } = options;
     const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
-    // TODO: Put more thorugh validation of the config
-    // Ensure the upload is done
-    if (!config.ipfsLink) {
-      console.log(
-        "Assets are not uploaded, please upload the assets first before deploying."
-      );
+    const isConfigValid = await validateConfigurationFile(config);
+    if (!isConfigValid) {
+      return;
     }
 
     const premintStartEpoch = dayjs(config.premintStartDate).unix();
@@ -79,8 +81,12 @@ programCommand("deploy_contract")
       uri: `https://${config.ipfsLink}.ipfs.dweb.link/`,
       description: config.description,
       size: config.size,
-      base_cost: config.costInNear.toString() + "000000000000000000000000",
-      min_cost: config.costInNear.toString() + "000000000000000000000000",
+      base_cost: parseInt(
+        parseFloat(config.costInNear) * COST_FACTOR
+      ).toString(),
+      min_cost: parseInt(
+        parseFloat(config.costInNear) * COST_FACTOR
+      ).toString(),
       premint_start_epoch: premintStartEpoch,
       mint_start_epoch: publicMintStartEpoch,
       royalties: {
