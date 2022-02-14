@@ -100,7 +100,6 @@ programCommand("deploy_contract")
     };
 
     // Deploy the contract
-    // TODO: Put a check if a contract is already deployed on this near address
     const deployCommand = `NEAR_ENV=${env} near deploy ${
       config.walletAuthority
     } ./programs/beyond.wasm new_default_meta '${JSON.stringify(
