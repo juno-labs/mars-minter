@@ -19,6 +19,8 @@
     "dayjs": "^1.10.7",
     "fs": "^0.0.1-security",
     "loglevel": "^1.8.0",
+    "near-api-js": "^0.44.2",
+    "near-willem-workspaces": "^1.0.3-alpha.0",
     "nft.storage": "^6.0.0",
     "path": "^0.12.7"
   }
