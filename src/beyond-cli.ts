@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import fs from "fs";
 import path from "path";
 import util from "util";
+import * as nearAPI from "near-api-js";
 import { uploadNftStorage } from "./helpers/upload";
 import {
   verifyAssets,
@@ -14,8 +15,6 @@ import {
 program.version("0.0.2");
 
 const execAsync = util.promisify(exec);
-
-const COST_FACTOR = 1000000000000000000000000;
 
 // Verifies that images and json have same number of assets
 // Verifies the structure of json
@@ -65,13 +64,16 @@ programCommand("deploy_contract")
   )
   .requiredOption("-cf, --config <string>", "Path of the config file")
   .action(async (options) => {
+    const { utils } = nearAPI;
     const { env } = options;
     const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
     const isConfigValid = await validateConfigurationFile(config);
     if (!isConfigValid) {
       return;
     }
-
+    const costInYoctoNear = utils.format.parseNearAmount(
+      parseFloat(config.costInNear).toString()
+    );
     const premintStartEpoch = dayjs(config.premintStartDate).unix();
     const publicMintStartEpoch = dayjs(config.publicMintStartDate).unix();
     const initDict = {
@@ -81,12 +83,8 @@ programCommand("deploy_contract")
       uri: `https://${config.ipfsLink}.ipfs.dweb.link/`,
       description: config.description,
       size: config.size,
-      base_cost: parseInt(
-        parseFloat(config.costInNear) * COST_FACTOR
-      ).toString(),
-      min_cost: parseInt(
-        parseFloat(config.costInNear) * COST_FACTOR
-      ).toString(),
+      base_cost: costInYoctoNear,
+      min_cost: costInYoctoNear,
       premint_start_epoch: premintStartEpoch,
       mint_start_epoch: publicMintStartEpoch,
       royalties: {
