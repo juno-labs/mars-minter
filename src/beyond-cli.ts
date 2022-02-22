@@ -71,7 +71,6 @@ programCommand("deploy_contract")
     if (!isConfigValid) {
       return;
     }
-
     const premintStartEpoch = dayjs(config.premintStartDate).unix();
     const publicMintStartEpoch = dayjs(config.publicMintStartDate).unix();
     const initDict = {
