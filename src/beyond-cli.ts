@@ -1,20 +1,21 @@
 // @ts-nocheck
-import { exec, execSync } from "child_process";
 import { program } from "commander";
 import dayjs from "dayjs";
 import fs from "fs";
+import { NEAR } from "near-willem-workspaces";
 import path from "path";
-import util from "util";
-import * as nearAPI from "near-api-js";
+import {
+  deployAndInitializeBeyond,
+  getAccount,
+  whitelistAccount,
+} from "./helpers/nearUtils";
 import { uploadNftStorage } from "./helpers/upload";
 import {
-  verifyAssets,
   validateConfigurationFile,
+  verifyAssets,
 } from "./helpers/verification";
 
 program.version("0.0.2");
-
-const execAsync = util.promisify(exec);
 
 // Verifies that images and json have same number of assets
 // Verifies the structure of json
@@ -64,16 +65,12 @@ programCommand("deploy_contract")
   )
   .requiredOption("-cf, --config <string>", "Path of the config file")
   .action(async (options) => {
-    const { utils } = nearAPI;
     const { env } = options;
     const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
     const isConfigValid = await validateConfigurationFile(config);
     if (!isConfigValid) {
       return;
     }
-    const costInYoctoNear = utils.format.parseNearAmount(
-      parseFloat(config.costInNear).toString()
-    );
     const premintStartEpoch = dayjs(config.premintStartDate).unix();
     const publicMintStartEpoch = dayjs(config.publicMintStartDate).unix();
     const initDict = {
@@ -83,8 +80,7 @@ programCommand("deploy_contract")
       uri: `https://${config.ipfsLink}.ipfs.dweb.link/`,
       description: config.description,
       size: config.size,
-      base_cost: costInYoctoNear,
-      min_cost: costInYoctoNear,
+      base_cost: NEAR.parse(`${config.costInNear} N`),
       premint_start_epoch: premintStartEpoch,
       mint_start_epoch: publicMintStartEpoch,
       royalties: {
@@ -97,15 +93,7 @@ programCommand("deploy_contract")
       },
     };
 
-    // Deploy the contract
-    const deployCommand = `NEAR_ENV=${env} near deploy ${
-      config.walletAuthority
-    } ./programs/beyond.wasm new_default_meta '${JSON.stringify(
-      initDict
-    )}' --accountId ${config.walletAuthority}`;
-    console.log({ deployCommand });
-    const deployOutput = execSync(deployCommand, { encoding: "utf-8" });
-    console.log({ deployOutput });
+    await deployAndInitializeBeyond(env, config.walletAuthority, initDict);
 
     process.exit(0);
   });
@@ -126,59 +114,18 @@ programCommand("whitelist")
     const { env } = options;
     const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
     const wlJson = JSON.parse(fs.readFileSync(options.wlJson, "utf8"));
+    const { walletAuthority: contractId } = config;
+    const adminAccount = await getAccount(env, contractId);
     const promiseList = Object.keys(wlJson).map(async (nearAddress) => {
-      const whiltelistCommand = `NEAR_ENV=${env} near call ${
-        config.walletAuthority
-      } add_whitelist_account '${JSON.stringify({
-        account_id: nearAddress,
-        allowance: wlJson[nearAddress],
-      })}' --accountId ${config.walletAuthority}`;
-      const { stdout: _stdoutAdd, stderr: _stderrAdd } = await execAsync(
-        whiltelistCommand,
-        {
-          encoding: "utf-8",
-        }
+      await whitelistAccount(
+        adminAccount,
+        contractId,
+        nearAddress,
+        wlJson[nearAddress]
       );
-
-      // Verify Whitelist
-      const verifyWhiltelistCommand = `NEAR_ENV=${env} near view ${
-        config.walletAuthority
-      } get_wl_allowance '${JSON.stringify({
-        account_id: nearAddress,
-      })}' --accountId ${config.walletAuthority}`;
-
-      const { stdout: stdoutVerify, stderr: _stderrVerify } = await execAsync(
-        verifyWhiltelistCommand,
-        {
-          encoding: "utf-8",
-        }
-      );
-
-      const regexForWlCount = "\n([0-9]+)\n";
-      const match = stdoutVerify.match(regexForWlCount);
-
-      let error = false;
-      if (!match) {
-        error = true;
-      }
-
-      if (!error) {
-        const currentWhitelistAllowance = parseInt(match[1]);
-        if (currentWhitelistAllowance !== wlJson[nearAddress]) {
-          error = true;
-        } else {
-          console.log(
-            `Whitelisting successful: ${nearAddress} for allowance ${wlJson[nearAddress]}`
-          );
-        }
-      }
-
-      if (error) {
-        console.log(`Whitelisting of ${nearAddress} failed, please try again!`);
-      }
     });
-
     await Promise.all(promiseList);
+    console.log(`Done ✅`);
     process.exit(0);
   });
 
