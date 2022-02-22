@@ -46,5 +46,5 @@ ts-node src/beyond-cli.ts deploy_contract -e mainnet -cf example-beyond-config.j
 10. Whitelist addresses by running the following command:
 
 ```sh
-ts-node src/beyond-cli.ts whitelist -e mainnet -cf path_config -wj example-beyond-whitelist-addresses.json
+ts-node src/beyond-cli.ts whitelist -e mainnet -cf example-beyond-config.json -wj example-beyond-whitelist-addresses.json
 ```
