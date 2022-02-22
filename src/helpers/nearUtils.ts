@@ -105,30 +105,37 @@ export const whitelistAccount = async (
   accountId: string,
   allowance: number
 ) => {
-  let currentAllowance = 0;
+  try {
+    let currentAllowance = 0;
 
-  currentAllowance = await getCurrentWhitelistAllowance(
-    adminAccount,
-    contractId,
-    accountId
-  );
-
-  if (currentAllowance !== allowance) {
-    await adminAccount.functionCall({
+    currentAllowance = await getCurrentWhitelistAllowance(
+      adminAccount,
       contractId,
-      methodName: "add_whitelist_account",
-      args: { account_id: accountId, allowance },
-      gas: Gas.parse("30Tgas"),
+      accountId
+    );
+
+    if (currentAllowance !== allowance) {
+      await adminAccount.functionCall({
+        contractId,
+        methodName: "add_whitelist_account",
+        args: { account_id: accountId, allowance },
+        gas: Gas.parse("30Tgas"),
+      });
+    } else {
+      return;
+    }
+
+    currentAllowance = await getCurrentWhitelistAllowance(
+      adminAccount,
+      contractId,
+      accountId
+    );
+
+    assert.ok(currentAllowance === allowance);
+  } catch (error) {
+    console.log({
+      accountId,
+      error,
     });
-  } else {
-    return;
   }
-
-  currentAllowance = await getCurrentWhitelistAllowance(
-    adminAccount,
-    contractId,
-    accountId
-  );
-
-  assert.ok(currentAllowance === allowance);
 };
