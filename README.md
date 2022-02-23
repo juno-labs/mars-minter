@@ -42,10 +42,10 @@ NEAR_ENV=mainnet near login
 ts-node src/beyond-cli.ts deploy_contract -e mainnet -cf example-beyond-config.json
 ```
 
-10. Create your whitelist file in the structure shown in `example-beyond-whitelist-addresses.json`.
+10. Create your whitelist file in the structure shown in `example-whitelist-addresses.json`.
 
 11. Whitelist addresses by running the following command:
 
 ```sh
-ts-node src/beyond-cli.ts whitelist -e mainnet -cf example-beyond-config.json -wj example-beyond-whitelist-addresses.json
+ts-node src/beyond-cli.ts whitelist -e mainnet -cf example-beyond-config.json -wj example-whitelist-addresses.json
 ```
