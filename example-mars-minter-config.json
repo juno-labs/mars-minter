@@ -6,8 +6,8 @@
   "description": "Dragon Nation is an exclusive collection of 3,000 Dragon NFTs on the NEAR blockchain.",
   "size": 3000,
   "costInNear": 5,
-  "premintStartDate": "",
-  "publicMintStartDate": "",
+  "premintStartDate": "09 Feb 2022 20:30:00 GMT",
+  "publicMintStartDate": "09 Feb 2022 21:30:00 GMT",
   "initialsPayout": {
     "c-k-s.near": 50,
     "ndragons.near": 20,

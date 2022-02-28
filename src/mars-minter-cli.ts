@@ -5,7 +5,7 @@ import fs from "fs";
 import { NEAR } from "near-willem-workspaces";
 import path from "path";
 import {
-  deployAndInitializeBeyond,
+  deployAndInitializeMarsMinter,
   getAccount,
   whitelistAccount,
 } from "./helpers/nearUtils";
@@ -93,7 +93,7 @@ programCommand("deploy_contract")
       },
     };
 
-    await deployAndInitializeBeyond(env, config.walletAuthority, initDict);
+    await deployAndInitializeMarsMinter(env, config.walletAuthority, initDict);
 
     process.exit(0);
   });

@@ -12,7 +12,7 @@ const CREDENTIALS_DIR = ".near-credentials";
 
 program.version("0.0.2");
 
-const BEYOND_WASM_PATH = "./programs/beyond.wasm";
+const MARS_MINTER_WASM_PATH = "./programs/mars_minter.wasm";
 
 const nodeUrlMap: any = {
   mainnet: "https://rpc.mainnet.near.org",
@@ -34,7 +34,7 @@ export const getAccount = async (env: string, accountId: string) => {
   return account;
 };
 
-export const deployAndInitializeBeyond = async (
+export const deployAndInitializeMarsMinter = async (
   env: string,
   accountId: string,
   initialData: any
@@ -64,7 +64,7 @@ export const deployAndInitializeBeyond = async (
     const result = await account.signAndSendTransaction({
       receiverId: accountId,
       actions: [
-        transactions.deployContract(fs.readFileSync(BEYOND_WASM_PATH)),
+        transactions.deployContract(fs.readFileSync(MARS_MINTER_WASM_PATH)),
         transactions.functionCall(
           "new_default_meta",
           initialData,
