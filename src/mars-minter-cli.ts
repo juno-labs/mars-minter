@@ -8,6 +8,7 @@ import {
   addMediaUri,
   deployAndInitializeMarsMinter,
   getAccount,
+  removeMediaUri,
   whitelistAccount,
 } from "./helpers/nearUtils";
 import { uploadNftStorage } from "./helpers/upload";
@@ -157,6 +158,29 @@ programCommand("update_media_uri")
     const promiseList = mediaUriList.map(
       async (mediaUri: string, index: number) => {
         await addMediaUri(adminAccount, contractId, index.toString(), mediaUri);
+      }
+    );
+    await Promise.all(promiseList);
+    console.log(`Done ✅`);
+    process.exit(0);
+  });
+
+// Remove media URIs
+programCommand("remove_media_uri")
+  .option(
+    "-e, --env <string>",
+    "NEAR cluster env name. One of: mainnet, testnet",
+    "testnet"
+  )
+  .requiredOption("-cf, --config <string>", "Path of the config file")
+  .action(async (options) => {
+    const { env } = options;
+    const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
+    const { walletAuthority: contractId } = config;
+    const adminAccount = await getAccount(env, contractId);
+    const promiseList = [...Array(config.size).keys()].map(
+      async (index: number) => {
+        await removeMediaUri(adminAccount, contractId, index.toString());
       }
     );
     await Promise.all(promiseList);
