@@ -199,3 +199,44 @@ export const addMediaUri = async (
     });
   }
 };
+
+export const removeMediaUri = async (
+  adminAccount: any,
+  contractId: string,
+  tokenId: string
+) => {
+  try {
+    let currentMediaUri = "";
+
+    currentMediaUri = await getCurrentMediaUri(
+      adminAccount,
+      contractId,
+      tokenId
+    );
+
+    if (currentMediaUri !== "") {
+      await adminAccount.functionCall({
+        contractId,
+        methodName: "remove_media_uri",
+        args: { token_id: tokenId },
+        gas: Gas.parse("10Tgas"),
+        attachedDeposit: "1",
+      });
+    } else {
+      return;
+    }
+
+    currentMediaUri = await getCurrentMediaUri(
+      adminAccount,
+      contractId,
+      tokenId
+    );
+
+    assert.ok(currentMediaUri === "");
+  } catch (error) {
+    console.log({
+      tokenId,
+      error,
+    });
+  }
+};
