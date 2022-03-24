@@ -99,6 +99,23 @@ const getCurrentWhitelistAllowance = async (
   return currentAllowance;
 };
 
+const getCurrentMediaUri = async (
+  adminAccount: any,
+  contractId: string,
+  tokenId: string
+) => {
+  let mediaUri = "";
+  try {
+    mediaUri = await adminAccount.viewFunction(contractId, "get_token_media", {
+      token_id: tokenId,
+    });
+  } catch (error) {
+    // Error will be thrown for the accounts which are not whitelisted
+  }
+
+  return mediaUri;
+};
+
 export const whitelistAccount = async (
   adminAccount: any,
   contractId: string,
@@ -135,6 +152,49 @@ export const whitelistAccount = async (
   } catch (error) {
     console.log({
       accountId,
+      error,
+    });
+  }
+};
+
+export const addMediaUri = async (
+  adminAccount: any,
+  contractId: string,
+  tokenId: string,
+  mediaUri: string
+) => {
+  try {
+    let currentMediaUri = "";
+
+    currentMediaUri = await getCurrentMediaUri(
+      adminAccount,
+      contractId,
+      tokenId
+    );
+
+    if (currentMediaUri !== mediaUri) {
+      await adminAccount.functionCall({
+        contractId,
+        methodName: "add_media_uri",
+        args: { token_id: tokenId, uri: mediaUri },
+        gas: Gas.parse("10Tgas"),
+        attachedDeposit: "1",
+      });
+    } else {
+      return;
+    }
+
+    currentMediaUri = await getCurrentMediaUri(
+      adminAccount,
+      contractId,
+      tokenId
+    );
+
+    assert.ok(currentMediaUri === mediaUri);
+  } catch (error) {
+    console.log({
+      tokenId,
+      mediaUri,
       error,
     });
   }
