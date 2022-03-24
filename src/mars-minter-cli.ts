@@ -1,10 +1,11 @@
-// @ts-nocheck
 import { program } from "commander";
+import assert from "assert";
 import dayjs from "dayjs";
 import fs from "fs";
 import { NEAR } from "near-willem-workspaces";
 import path from "path";
 import {
+  addMediaUri,
   deployAndInitializeMarsMinter,
   getAccount,
   whitelistAccount,
@@ -45,7 +46,7 @@ programCommand("upload_assets")
     "Path of the folder containing assets"
   )
   .requiredOption("-cf, --config <string>", "Path of the config file")
-  .action(async (options: string, cmd: any) => {
+  .action(async (options: any, cmd: any) => {
     console.log("\n === Uploading assets ===");
     const baseDir = options.directory;
     let config = JSON.parse(fs.readFileSync(options.config, "utf8"));
@@ -124,6 +125,40 @@ programCommand("whitelist")
         wlJson[nearAddress]
       );
     });
+    await Promise.all(promiseList);
+    console.log(`Done ✅`);
+    process.exit(0);
+  });
+
+// Update media URIs
+programCommand("update_media_uri")
+  .option(
+    "-e, --env <string>",
+    "NEAR cluster env name. One of: mainnet, testnet",
+    "testnet"
+  )
+  .requiredOption(
+    "-muj, --media-uri-json <string>",
+    "Path of the json file containing media URIs"
+  )
+  .requiredOption("-cf, --config <string>", "Path of the config file")
+  .action(async (options) => {
+    const { env } = options;
+    const config = JSON.parse(fs.readFileSync(options.config, "utf8"));
+    const mediaUriList = JSON.parse(
+      fs.readFileSync(options.mediaUriJson, "utf8")
+    );
+    const { walletAuthority: contractId } = config;
+    const adminAccount = await getAccount(env, contractId);
+    assert.ok(
+      mediaUriList.length === config.size,
+      "Media URIs length mismatch"
+    );
+    const promiseList = mediaUriList.map(
+      async (mediaUri: string, index: number) => {
+        await addMediaUri(adminAccount, contractId, index.toString(), mediaUri);
+      }
+    );
     await Promise.all(promiseList);
     console.log(`Done ✅`);
     process.exit(0);

@@ -49,3 +49,11 @@ ts-node src/mars-minter-cli.ts deploy_contract -e mainnet -cf example-mars-minte
 ```sh
 ts-node src/mars-minter-cli.ts whitelist -e mainnet -cf example-mars-minter-config.json -wj example-whitelist-addresses.json
 ```
+
+## Advanced Usages
+
+### Adding custom media URIs
+
+```sh
+ts-node src/mars-minter-cli.ts update_media_uri -e mainnet -cf example-mars-minter-config.json -muj ./example-media-uri-list.json
+```
